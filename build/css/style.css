@@ -617,6 +617,14 @@ button.twitter:after,
 input[type=submit].twitter:after {
   background: #2c8dd0;
 }
+.topic-header {
+  width: 91vw;
+}
+.topic-header .topic-box {
+  display: inline-block;
+  width: 30vw;
+  text-align: center;
+}
 .store-selector {
   background: #fff;
   max-width: 500px;
