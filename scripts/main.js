@@ -99,14 +99,12 @@ var Topics = React.createClass({
 //<TopicDesc topic={topics} />
 
     (function changeTopic() {
-      console.log(selectedTopic);
       topicDesc = <TopicDesc topic={selectedTopic} />
     })()
 
     Object.keys(topics).map(function(key) {
       var thisTopic = topics[key];
       var thisKey = key;
-      console.log(handleTopicSelection);
       topicBoxes.push(<TopicBox key={thisKey} index={thisKey} details={thisTopic} onUserClick={handleTopicSelection} />);
     });
     return (
@@ -142,7 +140,7 @@ var Topics = React.createClass({
 /*
   Topic Box
   <TopicBox/>
-*/
+*/ 
 
 var TopicBox = React.createClass({
   handleChange: function() {
@@ -170,7 +168,6 @@ var TopicDesc = React.createClass({
 
   // },
   render : function() {
-    console.log(this.props.topic);
     return (
       <div className="topic-desc">
         <h3 className="topic-desc-title">{this.props.topic.topic}</h3>
