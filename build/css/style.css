@@ -325,6 +325,7 @@ header.top h3:after {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+  width: 100%;
   height: 100vh;
   margin: 0 auto;
   -webkit-transform-style: preserve-3d;
@@ -480,15 +481,21 @@ ul.order li span.count span {
   clear: both;
   overflow: hidden;
 }
-.menu-item.image img {
-  width: 80vw;
-  float: right;
+img {
+  display: block;
+  float: left;
+  padding-right: 10px;
+  height: auto;
+  width: 100px;
 }
-.menu-item p {
+img.false {
+  display: none;
+}
+p {
   margin: 0;
   font-size: 1.8rem;
 }
-.menu-item .menu-item-name {
+.menu-item-name {
   margin: 0;
   display: -webkit-box;
   display: -webkit-flex;
@@ -503,14 +510,14 @@ ul.order li span.count span {
       -ms-flex-align: center;
           align-items: center;
 }
-.menu-item .price {
+.price {
   font-size: 1.4rem;
   -webkit-box-pack: end;
   -webkit-justify-content: flex-end;
       -ms-flex-pack: end;
           justify-content: flex-end;
 }
-.menu-item img {
+img {
   float: left;
   width: 150px;
   margin-right: 1rem;
@@ -618,24 +625,57 @@ input[type=submit].twitter:after {
   background: #2c8dd0;
 }
 .topic-header {
-  width: 91vw;
+  width: 100%;
+  height: 100px;
+  margin: 15px 0px;
 }
 .topic-header .topic-box {
   display: inline-block;
-  width: 30vw;
+  color: #fff;
+  text-transform: uppercase;
+  background-size: 100%;
+  width: 30%;
+  height: 100%;
   text-align: center;
+  margin-left: 5%;
+  border-radius: 15px;
 }
-.store-selector {
-  background: #fff;
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 2rem;
-  border: 2px solid #000;
+.topic-header .topic-box:first-of-type {
+  margin-left: 0;
 }
-.store-selector input {
+.topic-header .topic-box p {
+  width: 70%;
+  margin: auto;
+  display: block;
+  float: left;
+  margin-left: 15%;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+  top: 50%;
+  font-size: 2.5rem;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+.search-container .search-form {
   width: 100%;
+  display: block;
+  margin: auto;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  margin-bottom: 1rem;
+  border: 0.15rem solid #000;
 }
-.store-selector input[type="text"] {
+.search-container .search-form p {
   text-align: center;
+  text-transform: uppercase;
+  font-family: 'helvetica', sans-serif;
   font-size: 3rem;
+}
+.search-container .search-input {
+  width: 95%;
+  display: block;
+  margin: auto;
+  margin-top: 1.5rem;
+  outline: none;
 }

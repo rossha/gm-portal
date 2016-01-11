@@ -43,11 +43,11 @@ var App = React.createClass({
   render : function() {
     return (
       <div className="gm-web-portal">
-        <div className="menu">
+        <div className="menu-container">
           <Header tagline="Academic Materials and Scholarly Research Pertaining to Genetic Modification" />
           <TopicHeader 
             topics={this.state.topics} />
-          <SearchInput
+          <SearchContainer
             filterText={this.state.filterText}
             onUserInput={this.handleUserInput} />
           <ItemList
@@ -110,16 +110,69 @@ var TopicBox = React.createClass({
   render : function() {
     var details = this.props.details;
     return (
-      <div className={"topic-box " + details.type}>
+      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box">
         <p>{details.topic}</p>
       </div>
     )
   }
 })
 
+/* 
+  Search Container
+  <SearchContainer />
+ */
+
+var SearchContainer = React.createClass({
+  render : function() {
+    // var topics = this.props.topics;
+    // var topicBoxes = [];
+
+    // Object.keys(topics).map(function(key) {
+    //   var thisTopic = topics[key];
+    //   var thisKey = key;
+    //   topicBoxes.push(<TopicBox key={thisKey} index={thisKey} details={thisTopic} />);
+    // });
+    return (
+      <div className="search-container">
+        <SearchInput
+          filterText={this.props.filterText}
+          onUserInput={this.props.onUserInput} />
+      </div>
+    )
+  }
+}) 
+
 /*
-  Search Bar
-  <SearchBar />
+  Search Radio
+  <SearchRadio />
+*/
+
+// var SearchRadio = React.createClass({
+//   handleChange: function() {
+//     this.props.onUserInput(
+//       this.refs.filterTextInput.value
+//     );
+//   },
+//   render: function() {
+//     return (
+//       <form className="search-form">
+//         <p>Search Resources</p>
+//         <input
+//           className="search-input"
+//           type="text"
+//           placeholder="Search..."
+//           value={this.props.filterText}
+//           ref="filterTextInput"
+//           onChange={this.handleChange}
+//         />
+//       </form>
+//     );
+//   }
+// });
+
+/*
+  Search Input
+  <SearchInput />
 */
 
 var SearchInput = React.createClass({
@@ -130,8 +183,10 @@ var SearchInput = React.createClass({
   },
   render: function() {
     return (
-      <form>
+      <form className="search-form">
+        <p>Search Resources</p>
         <input
+          className="search-input"
           type="text"
           placeholder="Search..."
           value={this.props.filterText}
@@ -211,16 +266,19 @@ var Item = React.createClass({
   },
   render : function() {
     var details = this.props.details;
-    var isImage = (details.type === 'image' ? true : false);
+    console.log(details.link);
+    var hasImage = (details.link !== undefined ? true : false);
     var isOpen = false;
     var buttonText = (isOpen ? 'Close!' : 'Open!'); 
     return (
       <li className={"menu-item " + details.type}>
-        <img src={details.link} alt={details.title} />
-        <h3 className="menu-item-name">
-          {details.author}
-          <span className="price">{h.formatPrice(details.price)}</span>
-        </h3>
+        <div className={"menu-item-preview " + details.isExpanded}>
+          <img className={"menu-item-preview-image " + hasImage} src={details.link} alt={details.title} />
+        </div>
+        <div className={"menu-item-info " + details.type}>
+          <h3 className="menu-item-name">{details.title}</h3>
+          <h4 className="menu-item-author">{details.author}</h4>
+        </div>
         <p>{details.description}</p>
       </li>
     )
