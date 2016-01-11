@@ -279,8 +279,8 @@ button, input[type=submit]
     &:after
       background darken(#5EA9DD, 20%)
       
-// Topic Header
-.topic-header
+// Topic Container
+.topic-container
   width 100%
   height 100px
   margin 15px 0px
@@ -288,7 +288,7 @@ button, input[type=submit]
     display inline-block
     color white
     text-transform uppercase
-    background-size: 100%
+    background-size 100%
     width 30%
     height 100%
     text-align center
@@ -304,13 +304,22 @@ button, input[type=submit]
       margin-left 15%
       text-align center
       font-weight bold
-      position: relative;
-      top: 50%;
+      position: relative
+      top: 50%
       font-size: 2.5rem
-      transform: translateY(-50%);
+      transform: translateY(-50%)
+
+.topic-container
+  .topic-desc
+    clear both
+    margin 13px 0 22px
+    float right
+  .topic-desc-title
+    margin 0 0 10px
 
 // Search
 .search-container
+  clear both
   .search-form
     width 100%
     display block
@@ -318,7 +327,8 @@ button, input[type=submit]
     padding-top 1.5rem
     padding-bottom 2rem
     margin-bottom 1rem
-    border .15rem solid black
+    border-top 1px solid #000
+    //border .15rem solid black
     p
       text-align center
       text-transform uppercase

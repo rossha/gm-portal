@@ -22,7 +22,8 @@ var App = React.createClass({
     return {
       items : {},
       topics : {},
-      filterText: ''
+      filterText: '',
+      topic: {}
     }
   },
   componentDidMount : function () {
@@ -40,13 +41,21 @@ var App = React.createClass({
       filterText: filterText
     });
   },
+  handleTopicSelection : function(topic) {
+    this.setState({
+      topic: topic
+    });
+  },
   render : function() {
     return (
       <div className="gm-web-portal">
         <div className="menu-container">
           <Header tagline="Academic Materials and Scholarly Research Pertaining to Genetic Modification" />
-          <TopicHeader 
-            topics={this.state.topics} />
+          <Topics 
+            topics={this.state.topics}
+            topic={this.state.topic}
+            filterText={this.state.filterText}
+            onUserClick={this.handleTopicSelection} />
           <SearchContainer
             filterText={this.state.filterText}
             onUserInput={this.handleUserInput} />
@@ -76,23 +85,35 @@ var Header = React.createClass({
 })
 
 /*
-  Topic Header
-  <TopicHeader/>
+  Topics
+  <Topics/>
 */
 
-var TopicHeader = React.createClass({
+var Topics = React.createClass({
   render : function() {
     var topics = this.props.topics;
+    var selectedTopic = this.props.topic;
+    var handleTopicSelection = this.props.onUserClick;
     var topicBoxes = [];
+    var topicDesc;
+//<TopicDesc topic={topics} />
+
+    (function changeTopic() {
+      console.log(selectedTopic);
+      topicDesc = <TopicDesc topic={selectedTopic} />
+    })()
 
     Object.keys(topics).map(function(key) {
       var thisTopic = topics[key];
       var thisKey = key;
-      topicBoxes.push(<TopicBox key={thisKey} index={thisKey} details={thisTopic} />);
+      console.log(handleTopicSelection);
+      topicBoxes.push(<TopicBox key={thisKey} index={thisKey} details={thisTopic} onUserClick={handleTopicSelection} />);
     });
     return (
-      <div className="topic-header">
+      <div className="topic-container">
         {topicBoxes}
+      {/* take out topicBoxes and replace w/ topicContainer, which will contain topicBoxes */}
+        {topicDesc}
       </div>
     )
   }
@@ -104,19 +125,19 @@ var TopicHeader = React.createClass({
   Contains topic box and info box that pops up below it
 */
 
-var TopicContainer = React.createClass({
-  onButtonClick : function() {
+// var TopicContainer = React.createClass({
+//   onButtonClick : function() {
 
-  },
-  render : function() {
-    var details = this.props.details;
-    return (
-      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-container">
-        <p>{details.topic}</p>
-      </div>
-    )
-  }
-})
+//   },
+//   render : function() {
+//     var details = this.props.details;
+//           //{/*topicBoxes*/}
+//     console.log(this.props.topics);
+//     return (
+//       <h4>TOPIC CONTAINER</h4>
+//     );
+//   }
+// })
 
 /*
   Topic Box
@@ -124,13 +145,15 @@ var TopicContainer = React.createClass({
 */
 
 var TopicBox = React.createClass({
-  onButtonClick : function() {
-
+  handleChange: function() {
+    this.props.onUserClick(
+      this.props.details
+    );
   },
   render : function() {
     var details = this.props.details;
     return (
-      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box">
+      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box" onClick={this.handleChange}>
         <p>{details.topic}</p>
       </div>
     )
@@ -138,19 +161,20 @@ var TopicBox = React.createClass({
 })
 
 /*
-  Top Info Container
-  <TopInfoContainer />
+  Top Desc
+  <TopDesc />
 */
 
-var TopicInfoBox = React.createClass({
-  onButtonClick : function() {
+var TopicDesc = React.createClass({
+  // onButtonClick : function() {
 
-  },
+  // },
   render : function() {
-    var details = this.props.details;
+    console.log(this.props.topic);
     return (
-      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box">
-        <p>{details.topic}</p>
+      <div className="topic-desc">
+        <h3 className="topic-desc-title">{this.props.topic.topic}</h3>
+        <p>{this.props.topic.desc}</p>
       </div>
     )
   }
@@ -163,7 +187,7 @@ var TopicInfoBox = React.createClass({
 
 var SearchContainer = React.createClass({
   render : function() {
-    // var topics = this.props.topics;
+    //var topics = this.props.topics;
     // var topicBoxes = [];
 
     // Object.keys(topics).map(function(key) {
@@ -339,7 +363,6 @@ var Item = React.createClass({
   },
   render : function() {
     var details = this.props.details;
-    console.log(details.link);
     var hasImage = (details.link !== undefined ? true : false);
     var isOpen = false;
     var buttonText = (isOpen ? 'Close!' : 'Open!'); 
