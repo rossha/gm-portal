@@ -99,11 +99,50 @@ var TopicHeader = React.createClass({
 })
 
 /*
+  Topic Container
+  <TopicContainer/>
+  Contains topic box and info box that pops up below it
+*/
+
+var TopicContainer = React.createClass({
+  onButtonClick : function() {
+
+  },
+  render : function() {
+    var details = this.props.details;
+    return (
+      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-container">
+        <p>{details.topic}</p>
+      </div>
+    )
+  }
+})
+
+/*
   Topic Box
   <TopicBox/>
 */
 
 var TopicBox = React.createClass({
+  onButtonClick : function() {
+
+  },
+  render : function() {
+    var details = this.props.details;
+    return (
+      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box">
+        <p>{details.topic}</p>
+      </div>
+    )
+  }
+})
+
+/*
+  Top Info Container
+  <TopInfoContainer />
+*/
+
+var TopicInfoBox = React.createClass({
   onButtonClick : function() {
 
   },
@@ -147,16 +186,24 @@ var SearchContainer = React.createClass({
   <SearchRadio />
 */
 
-// var SearchRadio = React.createClass({
+// var Radio = React.createClass({
 //   handleChange: function() {
-//     this.props.onUserInput(
-//       this.refs.filterTextInput.value
-//     );
+//     // update state of radio selection
+
+
+
+//     // this.props.onUserInput(
+//     //   this.refs.filterTextInput.value
+//     // );
 //   },
 //   render: function() {
 //     return (
-//       <form className="search-form">
+//       <form className="radio">
 //         <p>Search Resources</p>
+//         option
+//         option
+//         option
+
 //         <input
 //           className="search-input"
 //           type="text"
@@ -169,6 +216,32 @@ var SearchContainer = React.createClass({
 //     );
 //   }
 // });
+
+/*
+  Radio Option
+  <SearchRadio />
+*/
+
+// var Radio = React.createClass({
+//   handleChange: function() {
+//     // update state of radio selection
+
+//     // this.props.onUserInput(
+//     //   this.refs.filterTextInput.value
+//     // );
+//   },
+//   render: function() {
+//     return (
+//       <input />
+//     );
+//   }
+// });
+
+/* 
+  Checkbox
+  <Checkbox />
+*/
+
 
 /*
   Search Input
