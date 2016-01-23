@@ -60,6 +60,7 @@ var App = React.createClass({
             filterText={this.state.filterText}
             onUserInput={this.handleUserInput} />
           <ItemList
+            topic={this.state.topic}
             items={this.state.items}
             filterText={this.state.filterText} />
         </div>  
@@ -110,32 +111,11 @@ var Topics = React.createClass({
     return (
       <div className="topic-container">
         {topicBoxes}
-      {/* take out topicBoxes and replace w/ topicContainer, which will contain topicBoxes */}
         {topicDesc}
       </div>
     )
   }
 })
-
-/*
-  Topic Container
-  <TopicContainer/>
-  Contains topic box and info box that pops up below it
-*/
-
-// var TopicContainer = React.createClass({
-//   onButtonClick : function() {
-
-//   },
-//   render : function() {
-//     var details = this.props.details;
-//           //{/*topicBoxes*/}
-//     console.log(this.props.topics);
-//     return (
-//       <h4>TOPIC CONTAINER</h4>
-//     );
-//   }
-// })
 
 /*
   Topic Box
@@ -304,6 +284,8 @@ var ItemList = React.createClass({
     var filter = this.props.filterText.toLowerCase();
     filter = filter.split(" ");
 
+    // selected
+
     var filtered = function(term) {
       for(var i=0;i<filter.length;i++){ 
         if(term.toLowerCase().indexOf(filter[i]) > -1){
@@ -313,6 +295,16 @@ var ItemList = React.createClass({
         }
       }
     }
+
+    // var selected = function(term) {
+    //   for(var i=0;i<selectedTopics.length;i++) {
+    //     if(term.toLowerCase().indexOf(selectedTopics[i]) > -1){
+    //       return true;
+    //     } else {
+    //       return false;
+    //     }
+    //   }
+    // }
 
     var filterItems = function(obj, key) {
       Object.keys(obj).map(function(k) {
@@ -324,10 +316,13 @@ var ItemList = React.createClass({
           return;
         } else if ( filtered(term) ) {
           return;
-        } else {
+        } // else if ( !selected(term) ) {
+          //return;
+          //}
+        else {
           if(used_keys.indexOf(key) == -1 && key !== undefined) {
             used_keys.push(key);
-            rows.push(<Item key={key} index={key} details={obj} />);
+            rows.push(<Item key={key} index={key} details={items[key]} />);
             return;
           }
         }
