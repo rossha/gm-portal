@@ -21,19 +21,44 @@ var App = React.createClass({
   getInitialState : function() {
     return {
       items : {},
+      images : [],
+      articles : [],
+      regions : [],
+      //radioOptions : ['Apples','Bananas','Peaches','Pears'],
+      dropdownOptions: {},
       topics : {},
       filterText: '',
-      topic: {}
+      topic: {},
+      region: ""
     }
   },
   componentDidMount : function () {
     base.syncState('Articles', {
       context: this,
-      state: 'items'
+      state: 'items',
+      then() {
+        var regions = this.state.regions;
+        var images = this.state.images;
+        var articles = this.state.articles;
+        this.state.items.map(function(item) {
+          if(item.type == "image") {
+            images.push(item);
+          } else {
+            articles.push(item);
+          }
+        });
+      }
     });
     base.syncState('Featured/topics', {
       context: this,
-      state: 'topics'
+      state: 'topics',
+      then() {
+        //console.log(this.state.topics);
+      }
+    });
+    base.syncState('Regions', {
+      context: this,
+      state: 'regions'
     });
   },
   handleUserInput : function(filterText) {
@@ -41,27 +66,48 @@ var App = React.createClass({
       filterText: filterText
     });
   },
+  handleRegionDropdown : function(region) {
+    this.setState({
+      region: region
+    });
+  },
   handleTopicSelection : function(topic) {
     this.setState({
       topic: topic
+    });
+  },
+  // handleRadioSelection : function(option) {
+  //   this.setState({
+  //     topic: topic
+  //   });
+  // },
+  handleShowAll : function() {
+    this.setState({
+      filterText: '',
+      topic: {}
     });
   },
   render : function() {
     return (
       <div className="gm-web-portal">
         <div className="menu-container">
-          <Header tagline="Academic Materials and Scholarly Research Pertaining to Genetic Modification" />
-          <Topics 
+          <Header tagline="Academic Materials and Scholarly Research Pertaining to Genetic Modification"/>
+          <Topics
             topics={this.state.topics}
             topic={this.state.topic}
             filterText={this.state.filterText}
             onUserClick={this.handleTopicSelection} />
           <SearchContainer
+            region={this.state.region}
+            regions={this.state.regions}
+            showAll={this.handleShowAll}
             filterText={this.state.filterText}
-            onUserInput={this.handleUserInput} />
-          <ItemList
+            onUserInput={this.handleUserInput}
+            regionDropdown = {this.handleRegionDropdown} />
+          <Items
             topic={this.state.topic}
-            items={this.state.items}
+            images={this.state.images}
+            articles={this.state.articles}
             filterText={this.state.filterText} />
         </div>  
       </div>
@@ -131,7 +177,7 @@ var TopicBox = React.createClass({
   render : function() {
     var details = this.props.details;
     return (
-      <div style={{backgroundImage : "url(" + details.src + ")"}} className="topic-box" onClick={this.handleChange}>
+      <div style={{background : "url(" + details.src + ") center no-repeat; background-size:100%"}} className="topic-box" onClick={this.handleChange}>
         <p>{details.topic}</p>
       </div>
     )
@@ -174,18 +220,27 @@ var SearchContainer = React.createClass({
     // });
     return (
       <div className="search-container">
-        <SearchInput
-          filterText={this.props.filterText}
-          onUserInput={this.props.onUserInput} />
+        <form className="search-form">
+          <p>Search Resources</p>
+          <Dropdown 
+            region={this.props.region}
+            regionDropdown={this.props.regionDropdown}
+            options={this.props.regions}
+            nullText="Select A Region..." />
+          <SearchInput
+            filterText={this.props.filterText}
+            onUserInput={this.props.onUserInput} />
+          <p className="search-show-all" onClick={this.props.showAll}>Clear Search Parameters</p> 
+        </form>
       </div>
     )
   }
 }) 
 
-/*
-  Search Radio
-  <SearchRadio />
-*/
+//*
+//   Search Radio
+//   <SearchRadio />
+// */
 
 // var Radio = React.createClass({
 //   handleChange: function() {
@@ -211,8 +266,7 @@ var SearchContainer = React.createClass({
 //           placeholder="Search..."
 //           value={this.props.filterText}
 //           ref="filterTextInput"
-//           onChange={this.handleChange}
-//         />
+//           onChange={this.handleChange} />
 //       </form>
 //     );
 //   }
@@ -238,10 +292,40 @@ var SearchContainer = React.createClass({
 //   }
 // });
 
-/* 
-  Checkbox
-  <Checkbox />
+/*
+  Dropdown
+  <Dropdown />
 */
+var Dropdown = React.createClass({
+  handleChange: function(event) {
+    this.props.regionDropdown(
+      event.target.value
+    );
+  },
+  render: function() {
+    return (
+      <select value={this.props.region} onChange={this.handleChange}>
+        <option key="none" value="">{this.props.nullText}</option>
+        {this.props.options.map(function(obj) {
+          var thisObj = obj;
+          return <DropdownOption details={thisObj} key={thisObj.keyword} />
+        })}
+      </select>
+    )
+  }
+});
+
+/*
+  Dropdown Option
+  <DropdownOption />
+*/
+var DropdownOption = React.createClass({
+  render: function() {
+    return (
+      <option value={this.props.details.keyword}>{this.props.details.title}</option>
+    )
+  }
+});
 
 
 /*
@@ -257,30 +341,31 @@ var SearchInput = React.createClass({
   },
   render: function() {
     return (
-      <form className="search-form">
-        <p>Search Resources</p>
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search..."
-          value={this.props.filterText}
-          ref="filterTextInput"
-          onChange={this.handleChange}
-        />
-      </form>
+      <input
+        className="search-input"
+        type="text"
+        placeholder="Search..."
+        value={this.props.filterText}
+        ref="filterTextInput"
+        onChange={this.handleChange}/>
     );
   }
 });
 
 /*
-  Item List
-  <ItemList />
+  Items
+  <Items />
 */
-var ItemList = React.createClass({
+var Items = React.createClass({
   render: function() {
-    var rows = [];
+    var articleList = [];
+    var imageList = [];
     var used_keys = [];
     var items = this.props.items;
+    var images = this.props.images;
+    var articles = this.props.articles;
+    var topic = this.props.topic;
+    var region = this.props.region;
     var filter = this.props.filterText.toLowerCase();
     filter = filter.split(" ");
 
@@ -296,17 +381,19 @@ var ItemList = React.createClass({
       }
     }
 
-    // var selected = function(term) {
-    //   for(var i=0;i<selectedTopics.length;i++) {
-    //     if(term.toLowerCase().indexOf(selectedTopics[i]) > -1){
-    //       return true;
-    //     } else {
-    //       return false;
-    //     }
-    //   }
-    // }
+    var inRegion = function(thisRegion) {
+      region == thisRegion ? false : true;
+    }
 
-    var filterItems = function(obj, key) {
+    var isOnTopic = function(term) {
+      if(term.toLowerCase().indexOf(topic.key) > -1 || topic.key == undefined){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    var filterItems = function(obj, key, type) {
       Object.keys(obj).map(function(k) {
         var term = obj[k];
         if(typeof term == 'object') {
@@ -316,40 +403,101 @@ var ItemList = React.createClass({
           return;
         } else if ( filtered(term) ) {
           return;
-        } // else if ( !selected(term) ) {
-          //return;
-          //}
-        else {
+        } else if ( !isOnTopic(term) ) {
+          return;
+        } else {
           if(used_keys.indexOf(key) == -1 && key !== undefined) {
             used_keys.push(key);
-            rows.push(<Item key={key} index={key} details={items[key]} />);
+            if(type == "article") {
+              articleList.push(<Article key={key} index={key} details={articles[key]}/>);
+            } else if(type == "image") {
+              imageList.push(<Image key={key} index={key} details={images[key]}/>)
+            }
             return;
           }
         }
       });
     };
 
-    Object.keys(items).map(function(key) {
-      var thisItem = items[key];
+    Object.keys(articles).map(function(key) {
+      var thisItem = articles[key];
+      if(region !== "" && inRegion(thisItem.region)){
+        return;
+      }
       var thisKey = key;
-      filterItems(thisItem, thisKey);
+      filterItems(thisItem, thisKey, "article");
+      return;
+    });
+
+    Object.keys(images).map(function(key) {
+      var thisItem = images[key];
+      var thisKey = key;
+      filterItems(thisItem, thisKey, "image");
       return;
     });
 
     return (
-      <ul>
-        {rows}
-      </ul>
+      <div className="items-container">
+        <div>
+          <ImageList images={imageList}/>
+        </div>
+        <ul>
+          {articleList}
+        </ul>
+      </div>
     );
   }
 })
 
 /*
-  Item
-  <Item />
+  Article
+  <Article />
 */
 
-var Item = React.createClass({
+var Article = React.createClass({
+  onButtonClick : function() {
+
+  },
+  render : function() {
+    var details = this.props.details;
+    var hasPDF = (details.link !== "" ? true : false);
+    var hasURL = (details.url !== "" ? true : false);
+    var isOpen = false;
+    var buttonText = (isOpen ? 'Close!' : 'Open!'); 
+    return (
+      <li className={"article " + details.type}>
+        <span className="article-title"><a target="_blank" className={hasURL} href={details.url}>{details.title}</a></span>
+        <span className={"article-title " + !hasURL}>{details.title}</span>
+        
+        <span className={"article-pdf " + hasPDF}><a target="_blank" href={details.link}>> View as PDF</a></span>
+        <h4 className="menu-item-author">{details.author}</h4>
+        <p>{details.description}</p>
+      </li>
+    )
+  }
+});
+
+/* 
+   Image List
+  <ImageList />
+ */
+
+var ImageList = React.createClass({
+  render : function() {
+    return (
+      <div className="image-container">
+        {this.props.images}
+      </div>
+    )
+  }
+})
+
+/*
+  Image
+  <Image />
+*/
+
+var Image = React.createClass({
   onButtonClick : function() {
 
   },
@@ -359,16 +507,7 @@ var Item = React.createClass({
     var isOpen = false;
     var buttonText = (isOpen ? 'Close!' : 'Open!'); 
     return (
-      <li className={"menu-item " + details.type}>
-        <div className={"menu-item-preview " + details.isExpanded}>
-          <img className={"menu-item-preview-image " + hasImage} src={details.link} alt={details.title} />
-        </div>
-        <div className={"menu-item-info " + details.type}>
-          <h3 className="menu-item-name">{details.title}</h3>
-          <h4 className="menu-item-author">{details.author}</h4>
-        </div>
-        <p>{details.description}</p>
-      </li>
+      <img details={details} src={details.link} alt={details.title} />
     )
   }
 });
