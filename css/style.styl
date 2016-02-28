@@ -150,8 +150,8 @@ ul.order
   margin-top 2rem
   transform translateZ(0);
 
-//.menu-container
-  //max-width 900px
+.menu-container
+  width 100%
 
 .article
   border-top 1px solid black
@@ -204,6 +204,14 @@ ul.order
     //float left
     //width 150px
     //margin-right 1rem
+  img.openClose
+    float right
+    height 20px
+    margin-bottom 15px
+    transform rotate(45deg)
+    .false
+      -webkit-transition -webkit-transform rotate(90deg) 1s;
+      transition transform rotate(90deg) 1s;
 
 button, input[type=submit]
   text-transform uppercase
@@ -274,40 +282,41 @@ button, input[type=submit]
       
 // Topic Container
 .topic-container
-  width 100%
-  max-width 1000px
-  height 130px
-  margin 15px auto
-  display block
-  @media screen and (max-width: 730px)
-    height 100px
-  @media screen and (max-width: 560px)
-    height 60px
-  .topic-box
-    display inline-block
-    color white
-    text-transform uppercase
-    background-size 100%
-    width 30%
-    height 100%
-    text-align center
-    margin-left 5%
-    border-radius 15px
-    cursor pointer
-    &:first-of-type
-      margin-left 0
-    p
-      width 70%
-      margin auto
-      display block
-      float left
-      margin-left 15%
+  .topic-box-container
+    margin 15px auto
+    display block
+    width 100%
+    height 130px
+    max-width 1000px
+    @media screen and (max-width: 730px)
+      height 100px
+    @media screen and (max-width: 560px)
+      height 60px
+    .topic-box
+      display inline-block
+      color white
+      text-transform uppercase
+      background-size 100%
+      width 30%
+      height 100%
       text-align center
-      font-weight bold
-      position: relative
-      top: 50%
-      font-size: 2.5rem
-      transform: translateY(-50%)
+      margin-left 5%
+      border-radius 15px
+      cursor pointer
+      &:first-of-type
+        margin-left 0
+      p
+        width 70%
+        margin auto
+        display block
+        float left
+        margin-left 15%
+        text-align center
+        font-weight bold
+        position: relative
+        top: 50%
+        font-size: 2.5rem
+        transform: translateY(-50%)
 
 .topic-container
   .topic-desc
@@ -343,22 +352,46 @@ button, input[type=submit]
       float right
       font-size 1rem
       cursor pointer
+    .dropdown-container
+      display block
+      margin auto
+      text-align center
+      select
+        margin 10px 0px 10px 10px
   .search-input
     width 95%
     display block
-    margin auto
+    margin-left 2.5%
     margin-top 1.5rem
     outline none
 
 // Image Container
 .image-container
-  height 150px
   overflow auto
   white-space nowrap
   cursor pointer
   text-align center
   img
     white-space nowrap
-    margin 20px 10px 0 10px
-    height 100px
+    margin 0px 10px
+    height 130px
     width auto
+    padding 15px 0px
+.selected-image
+  padding 15px
+  border-bottom solid 1px
+  img
+    width auto
+    max-width 100%
+    max-height 400px
+    display block
+    margin auto
+  p
+    text-align center
+    font-size 2.5rem
+    margin-top 10px
+    font-weight 400
+  img.close
+    height 20px
+    float right
+    margin-bottom 10px
