@@ -153,8 +153,7 @@ ul.order
 //.menu-container
   //max-width 900px
 
-.menu-item
-  border-bottom 2px solid black
+.article
   border-top 1px solid black
   padding-bottom 2rem
   padding-top 2rem
@@ -165,31 +164,46 @@ ul.order
     //img
       //width 80vw
       //float right
-  img
+  img.menu-item-preview-image
     display block
     float left
     padding-right 10px
     height auto
     width 100px
-    &.false
-      display none
+  &span.false
+    display none
+  span
+    display inline-block
+    &.article-pdf
+      margin-left 15px
+      color blue
+      font-weight bold
+  a
+    text-decoration none
+    color black
+  .article-title
+    font-weight bold
+    font-size 3rem
+    color black
+    a:hover
+      color gray
+      font-style italic
+    a:visited
+      color gray
+  .article-pdf a
+    color blue
   p
     margin 0
     font-size 1.8rem
-  .menu-item-name
-    margin 0
-    display flex
-    justify-content space-between
-    align-items center
   .price
     font-size 1.4rem
     // color orange
     justify-content flex-end
     // font-family 'Open Sans Condensed'
   img
-    float left
-    width 150px
-    margin-right 1rem
+    //float left
+    //width 150px
+    //margin-right 1rem
 
 button, input[type=submit]
   text-transform uppercase
@@ -261,8 +275,14 @@ button, input[type=submit]
 // Topic Container
 .topic-container
   width 100%
-  height 100px
-  margin 15px 0px
+  max-width 1000px
+  height 130px
+  margin 15px auto
+  display block
+  @media screen and (max-width: 730px)
+    height 100px
+  @media screen and (max-width: 560px)
+    height 60px
   .topic-box
     display inline-block
     color white
@@ -273,6 +293,7 @@ button, input[type=submit]
     text-align center
     margin-left 5%
     border-radius 15px
+    cursor pointer
     &:first-of-type
       margin-left 0
     p
@@ -299,23 +320,45 @@ button, input[type=submit]
 // Search
 .search-container
   clear both
+  width 100%
+  border-top 1px solid #000
+  border-bottom 1px solid #000
   .search-form
-    width 100%
     display block
     margin auto
     padding-top 1.5rem
     padding-bottom 2rem
     margin-bottom 1rem
-    border-top 1px solid #000
-    //border .15rem solid black
     p
       text-align center
       text-transform uppercase
       font-family 'helvetica', sans-serif;
       font-size 3rem
+    .search-show-all
+      padding 2px 5px
+      margin 5px
+      margin-right 2.5%
+      width auto
+      border 1px black solid
+      float right
+      font-size 1rem
+      cursor pointer
   .search-input
     width 95%
     display block
     margin auto
     margin-top 1.5rem
     outline none
+
+// Image Container
+.image-container
+  height 150px
+  overflow auto
+  white-space nowrap
+  cursor pointer
+  text-align center
+  img
+    white-space nowrap
+    margin 20px 10px 0 10px
+    height 100px
+    width auto
