@@ -106,6 +106,7 @@ var App = React.createClass({
             regionDropdown = {this.handleRegionDropdown} />
           <Items
             topic={this.state.topic}
+            region={this.state.region}
             images={this.state.images}
             articles={this.state.articles}
             filterText={this.state.filterText} />
@@ -382,7 +383,13 @@ var Items = React.createClass({
     }
 
     var inRegion = function(thisRegion) {
-      region == thisRegion ? false : true;
+      if(region == undefined || region == "") {
+        return true;
+      } else if (region == thisRegion) {
+          return true;
+      } else {
+        return false;
+      }
     }
 
     var isOnTopic = function(term) {
@@ -421,19 +428,24 @@ var Items = React.createClass({
 
     Object.keys(articles).map(function(key) {
       var thisItem = articles[key];
-      if(region !== "" && inRegion(thisItem.region)){
+      if(inRegion(thisItem.region)){
+        var thisKey = key;
+        filterItems(thisItem, thisKey, "article");
+        return;
+      } else {
         return;
       }
-      var thisKey = key;
-      filterItems(thisItem, thisKey, "article");
-      return;
     });
 
     Object.keys(images).map(function(key) {
       var thisItem = images[key];
-      var thisKey = key;
-      filterItems(thisItem, thisKey, "image");
-      return;
+      if(inRegion(thisItem.region)){
+        var thisKey = key;
+        filterItems(thisItem, thisKey, "image");
+        return;
+      } else {
+        return;
+      }
     });
 
     return (
