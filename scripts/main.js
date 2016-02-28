@@ -24,12 +24,13 @@ var App = React.createClass({
       images : [],
       articles : [],
       regions : [],
-      //radioOptions : ['Apples','Bananas','Peaches','Pears'],
-      dropdownOptions: {},
+      types : [],
       topics : {},
       filterText: '',
       topic: {},
-      region: ""
+      region: "",
+      type: "",
+      image: {}
     }
   },
   componentDidMount : function () {
@@ -60,6 +61,10 @@ var App = React.createClass({
       context: this,
       state: 'regions'
     });
+    base.syncState('Keywords', {
+      context: this,
+      state: 'keywords'
+    });
   },
   handleUserInput : function(filterText) {
     this.setState({
@@ -71,20 +76,32 @@ var App = React.createClass({
       region: region
     });
   },
+  handleTypeDropdown : function(type) {
+    this.setState({
+      type: type
+    });
+  },
   handleTopicSelection : function(topic) {
     this.setState({
       topic: topic
     });
   },
-  // handleRadioSelection : function(option) {
-  //   this.setState({
-  //     topic: topic
-  //   });
-  // },
+  handleImageSelection : function(image) {
+    this.setState({
+      image: image
+    });
+  },
+  handleClearImage : function() {
+    this.setState({
+      image:{}
+    })
+  },
   handleShowAll : function() {
     this.setState({
-      filterText: '',
-      topic: {}
+      filterText:'',
+      topic:{},
+      region:"",
+      image:{}
     });
   },
   render : function() {
@@ -100,16 +117,21 @@ var App = React.createClass({
           <SearchContainer
             region={this.state.region}
             regions={this.state.regions}
+            selectedKeywords={this.state.selectedKeywords}
             showAll={this.handleShowAll}
             filterText={this.state.filterText}
             onUserInput={this.handleUserInput}
-            regionDropdown = {this.handleRegionDropdown} />
+            typeDropdown={this.handleTypeDropdown}
+            regionDropdown={this.handleRegionDropdown} />
           <Items
             topic={this.state.topic}
             region={this.state.region}
+            image={this.state.image}
             images={this.state.images}
             articles={this.state.articles}
-            filterText={this.state.filterText} />
+            imageSelected={this.handleImageSelection}
+            filterText={this.state.filterText}
+            clearImage={this.handleClearImage} />
         </div>  
       </div>
     )
@@ -157,7 +179,9 @@ var Topics = React.createClass({
     });
     return (
       <div className="topic-container">
-        {topicBoxes}
+        <div className="topic-box-container">
+          {topicBoxes}
+        </div>
         {topicDesc}
       </div>
     )
@@ -211,23 +235,23 @@ var TopicDesc = React.createClass({
 
 var SearchContainer = React.createClass({
   render : function() {
-    //var topics = this.props.topics;
-    // var topicBoxes = [];
-
-    // Object.keys(topics).map(function(key) {
-    //   var thisTopic = topics[key];
-    //   var thisKey = key;
-    //   topicBoxes.push(<TopicBox key={thisKey} index={thisKey} details={thisTopic} />);
-    // });
     return (
       <div className="search-container">
         <form className="search-form">
           <p>Search Resources</p>
-          <Dropdown 
+          <div className="dropdown-container">
+            <span>Search By Region: </span>
+            <Dropdown 
+              region={this.props.region}
+              regionDropdown={this.props.regionDropdown}
+              options={this.props.regions}
+              nullText="Select Region..." />
+          </div>
+          {/*<Dropdown 
             region={this.props.region}
             regionDropdown={this.props.regionDropdown}
             options={this.props.regions}
-            nullText="Select A Region..." />
+            nullText="Select Resource Type..." />*/}
           <SearchInput
             filterText={this.props.filterText}
             onUserInput={this.props.onUserInput} />
@@ -237,61 +261,6 @@ var SearchContainer = React.createClass({
     )
   }
 }) 
-
-//*
-//   Search Radio
-//   <SearchRadio />
-// */
-
-// var Radio = React.createClass({
-//   handleChange: function() {
-//     // update state of radio selection
-
-
-
-//     // this.props.onUserInput(
-//     //   this.refs.filterTextInput.value
-//     // );
-//   },
-//   render: function() {
-//     return (
-//       <form className="radio">
-//         <p>Search Resources</p>
-//         option
-//         option
-//         option
-
-//         <input
-//           className="search-input"
-//           type="text"
-//           placeholder="Search..."
-//           value={this.props.filterText}
-//           ref="filterTextInput"
-//           onChange={this.handleChange} />
-//       </form>
-//     );
-//   }
-// });
-
-/*
-  Radio Option
-  <SearchRadio />
-*/
-
-// var Radio = React.createClass({
-//   handleChange: function() {
-//     // update state of radio selection
-
-//     // this.props.onUserInput(
-//     //   this.refs.filterTextInput.value
-//     // );
-//   },
-//   render: function() {
-//     return (
-//       <input />
-//     );
-//   }
-// });
 
 /*
   Dropdown
@@ -368,6 +337,7 @@ var Items = React.createClass({
     var topic = this.props.topic;
     var region = this.props.region;
     var filter = this.props.filterText.toLowerCase();
+    var imageSelected = this.props.imageSelected;
     filter = filter.split(" ");
 
     // selected
@@ -392,9 +362,25 @@ var Items = React.createClass({
       }
     }
 
-    var isOnTopic = function(term) {
-      if(term.toLowerCase().indexOf(topic.key) > -1 || topic.key == undefined){
+    var onTopic = function(keywords) {
+      var onTopic;
+      Object.keys(keywords).map(function(k) {
+        if(Object.keys(topic).length == 0) {
+          onTopic = true;
+        } else if (keywords[k] == topic.key) {
+          onTopic =  true;
+        } else {
+          onTopic;
+        }
+      })
+      return onTopic;
+    }
+
+    var isType = function(type) {
+      if(type == undefined || type == "") {
         return true;
+      } else if (type == thisType) {
+          return true;
       } else {
         return false;
       }
@@ -410,15 +396,13 @@ var Items = React.createClass({
           return;
         } else if ( filtered(term) ) {
           return;
-        } else if ( !isOnTopic(term) ) {
-          return;
         } else {
           if(used_keys.indexOf(key) == -1 && key !== undefined) {
             used_keys.push(key);
             if(type == "article") {
               articleList.push(<Article key={key} index={key} details={articles[key]}/>);
             } else if(type == "image") {
-              imageList.push(<Image key={key} index={key} details={images[key]}/>)
+              imageList.push(<Image key={key} index={key} imageSelected={imageSelected} details={images[key]}/>)
             }
             return;
           }
@@ -428,10 +412,9 @@ var Items = React.createClass({
 
     Object.keys(articles).map(function(key) {
       var thisItem = articles[key];
-      if(inRegion(thisItem.region)){
+      if(inRegion(thisItem.region) && onTopic(thisItem.keywords)){
         var thisKey = key;
-        filterItems(thisItem, thisKey, "article");
-        return;
+        return filterItems(thisItem, thisKey, "article");
       } else {
         return;
       }
@@ -439,7 +422,7 @@ var Items = React.createClass({
 
     Object.keys(images).map(function(key) {
       var thisItem = images[key];
-      if(inRegion(thisItem.region)){
+      if(inRegion(thisItem.region) && onTopic(thisItem.keywords)){
         var thisKey = key;
         filterItems(thisItem, thisKey, "image");
         return;
@@ -451,6 +434,7 @@ var Items = React.createClass({
     return (
       <div className="items-container">
         <div>
+          <SelectedImage clearImage={this.props.clearImage} image={this.props.image} />
           <ImageList images={imageList}/>
         </div>
         <ul>
@@ -467,19 +451,19 @@ var Items = React.createClass({
 */
 
 var Article = React.createClass({
-  onButtonClick : function() {
-
+  openClose : function() {
+    isOpen == false ? (isOpen = true) : (isOpen = false);
   },
   render : function() {
     var details = this.props.details;
     var hasPDF = (details.link !== "" ? true : false);
     var hasURL = (details.url !== "" ? true : false);
     var isOpen = false;
-    var buttonText = (isOpen ? 'Close!' : 'Open!'); 
     return (
       <li className={"article " + details.type}>
         <span className="article-title"><a target="_blank" className={hasURL} href={details.url}>{details.title}</a></span>
         <span className={"article-title " + !hasURL}>{details.title}</span>
+        <img className={"openClose " + isOpen} src="https://s3.amazonaws.com/gm-web-portal/close.png" onclick={this.toggleOpen} />
         
         <span className={"article-pdf " + hasPDF}><a target="_blank" href={details.link}>> View as PDF</a></span>
         <h4 className="menu-item-author">{details.author}</h4>
@@ -488,6 +472,31 @@ var Article = React.createClass({
     )
   }
 });
+
+/* 
+   SelectedImage
+  <SelectedImage />
+ */
+
+var SelectedImage = React.createClass({
+  handleClose : function() {
+    this.props.clearImage();
+  },
+  render : function() {
+    if(Object.keys(this.props.image).length !== 0) {
+    return (
+      <div className="selected-image">
+        <img className="close" src="https://s3.amazonaws.com/gm-web-portal/close.png" onClick={this.handleClose} />
+        <Image details={this.props.image} />
+        <p>{this.props.image.description}</p>
+      </div>
+    ) } else {
+      return (
+        <div></div>
+      )
+    }
+  }
+})
 
 /* 
    Image List
@@ -510,16 +519,19 @@ var ImageList = React.createClass({
 */
 
 var Image = React.createClass({
-  onButtonClick : function() {
-
+  handleClick : function(event) {
+    if(event.target.className == "selected-image") {
+      return;
+    } else {
+      this.props.imageSelected(
+        this.props.details
+      );
+    }
   },
   render : function() {
     var details = this.props.details;
-    var hasImage = (details.link !== undefined ? true : false);
-    var isOpen = false;
-    var buttonText = (isOpen ? 'Close!' : 'Open!'); 
     return (
-      <img details={details} src={details.link} alt={details.title} />
+      <img alt={details.description} src={details.link} onClick={this.handleClick} />
     )
   }
 });
