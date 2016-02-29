@@ -23,14 +23,16 @@ var App = React.createClass({
       items : {},
       images : [],
       articles : [],
+      keywords: [],
       regions : [],
       types : [],
       topics : {},
-      filterText: '',
-      topic: {},
-      region: "",
-      type: "",
-      image: {}
+      selectedKeywords : [],
+      filterText : '',
+      topic : {},
+      region : "",
+      type : "",
+      image : {}
     }
   },
   componentDidMount : function () {
@@ -91,6 +93,18 @@ var App = React.createClass({
       image: image
     });
   },
+  handleUpdateKeywords : function(k) {
+    var list = this.state.selectedKeywords;
+    var keyword = list.indexOf(k);
+    if(keyword > -1) {
+      list.splice(keyword,1);
+    } else {
+      list.push(k);
+    }
+    this.setState({
+      selectedKeywords: list
+    });
+  },
   handleClearImage : function() {
     this.setState({
       image:{}
@@ -117,11 +131,12 @@ var App = React.createClass({
           <SearchContainer
             region={this.state.region}
             regions={this.state.regions}
-            selectedKeywords={this.state.selectedKeywords}
+            keywords={this.state.keywords}
             showAll={this.handleShowAll}
             filterText={this.state.filterText}
             onUserInput={this.handleUserInput}
             typeDropdown={this.handleTypeDropdown}
+            updateKeywords={this.handleUpdateKeywords}
             regionDropdown={this.handleRegionDropdown} />
           <Items
             topic={this.state.topic}
@@ -129,6 +144,7 @@ var App = React.createClass({
             image={this.state.image}
             images={this.state.images}
             articles={this.state.articles}
+            selectedKeywords={this.state.selectedKeywords}
             imageSelected={this.handleImageSelection}
             filterText={this.state.filterText}
             clearImage={this.handleClearImage} />
@@ -247,6 +263,7 @@ var SearchContainer = React.createClass({
               options={this.props.regions}
               nullText="Select Region..." />
           </div>
+          <KeywordList updateKeywords={this.props.updateKeywords} keywords={this.props.keywords} />
           {/*<Dropdown 
             region={this.props.region}
             regionDropdown={this.props.regionDropdown}
@@ -297,6 +314,55 @@ var DropdownOption = React.createClass({
   }
 });
 
+/*
+  Keywords
+  <Keywords />
+*/
+var KeywordList = React.createClass({
+  render: function() {
+    var updateKeywords = this.props.updateKeywords;
+    return (
+      <div className="keyword-container">
+        <p>Search By Keywords</p>
+        {this.props.keywords.map(function(obj) {
+          var thisObj = obj;
+          return <Keyword updateKeywords={updateKeywords} details={thisObj} key={thisObj.keyword} />
+        })}
+      </div>
+    )
+  }
+});
+
+/*
+  Keyword
+  <Keyword />
+*/
+var Keyword = React.createClass({
+  handleClick: function(event) {
+    if(event.target.className == "selected") {
+      event.target.className = "";
+      this.props.updateKeywords(
+        this.props.details.keyword
+      );
+    } else {
+      event.target.className = "selected";
+      this.props.updateKeywords(
+        this.props.details.keyword
+      );
+    }
+    // this.props.(
+    //   this.props.details
+    // );
+    // this.props.regionDropdown(
+    //   event.target.value
+    // );
+  },
+  render: function() {
+    return (
+      <span value={this.props.details.keyword} onClick={this.handleClick}>{this.props.details.title}</span>
+    )
+  }
+});
 
 /*
   Search Input
@@ -338,6 +404,7 @@ var Items = React.createClass({
     var region = this.props.region;
     var filter = this.props.filterText.toLowerCase();
     var imageSelected = this.props.imageSelected;
+    var selectedKeywords = this.props.selectedKeywords;
     filter = filter.split(" ");
 
     // selected
@@ -376,6 +443,24 @@ var Items = React.createClass({
       return onTopic;
     }
 
+    var hasKeywords = function(obj) {
+      var keywords = [];
+      Object.keys(obj).map(function(k) {
+        keywords.push(obj[k]);
+      })
+      if(selectedKeywords.length == 0) {
+        return true;
+      } else {
+        var hasKeyword = true;
+        selectedKeywords.map(function(k){
+          if(keywords.indexOf(k) == -1){
+            hasKeyword = false;
+          }
+        });
+        return hasKeyword;
+      }
+    }
+
     var isType = function(type) {
       if(type == undefined || type == "") {
         return true;
@@ -412,17 +497,18 @@ var Items = React.createClass({
 
     Object.keys(articles).map(function(key) {
       var thisItem = articles[key];
-      if(inRegion(thisItem.region) && onTopic(thisItem.keywords)){
+      if(inRegion(thisItem.region) && onTopic(thisItem.keywords) && hasKeywords(thisItem.keywords)){
         var thisKey = key;
         return filterItems(thisItem, thisKey, "article");
       } else {
+
         return;
       }
     });
 
     Object.keys(images).map(function(key) {
       var thisItem = images[key];
-      if(inRegion(thisItem.region) && onTopic(thisItem.keywords)){
+      if(inRegion(thisItem.region) && hasKeywords(thisItem.keywords) && onTopic(thisItem.keywords)){
         var thisKey = key;
         filterItems(thisItem, thisKey, "image");
         return;
